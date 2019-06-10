@@ -55,6 +55,19 @@ class Client {
       },
     }));
   }
+
+  initBackup(srcPath, dstPath) {
+    this._mux.sendControlMessage(encodeObject({
+      id: this._nextRequestId++,
+      jsonrpc: '2.0',
+      method: 'initBackup',
+      params: {
+        key: this._authKey,
+        srcPath,
+        dstPath
+      },
+    }));
+  }
 }
 
 class ClientBuilder {
