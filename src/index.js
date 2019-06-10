@@ -9,13 +9,31 @@ class Client {
     this._nextRequestId = 1;
     this._mux = mux;
     this._authKey = null;
+    this._requests = {};
     
     mux.onControlMessage((rawMessage) => {
       const message = decodeObject(rawMessage)
       console.log(message);
 
-      if (message.id !== undefined) {
+      if (message.response !== undefined) {
+        console.log("response for: ", message.id);
       }
+
+      delete this._requests[message.id];
+    });
+
+    mux.onConduit((producer, rawMeta) => {
+      const meta = decodeObject(rawMeta)
+      console.log(meta);
+
+      if (meta.response === true) {
+        this._requests[meta.id].resolve(producer);
+      }
+      else {
+        this._requests[meta.id].reject(meta.response);
+      }
+
+      delete this._requests[meta.id];
     });
   }
 
@@ -68,6 +86,27 @@ class Client {
       },
     }));
   }
+
+  async download(path, range) {
+
+    const requestId = this._nextRequestId++;
+
+    this._mux.sendControlMessage(encodeObject({
+      id: requestId,
+      jsonrpc: '2.0',
+      method: 'download',
+      params: {
+        key: this._authKey,
+        path,
+        range,
+      },
+    }));
+
+    return new Promise((resolve, reject) => {
+      this._requests[requestId] = { resolve, reject };
+    });
+  }
+
 }
 
 class ClientBuilder {
