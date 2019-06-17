@@ -26,11 +26,19 @@ class Client {
     }, fileStream);
   }
 
-  saveTextFile(path, text) {
-    this._rpc.request('saveTextFile', {
+  async storeTextFile(path, text) {
+    return this._rpc.request('storeTextFile', {
       key: this._authKey,
       path,
       text,
+    });
+  }
+
+  addTags(path, tags) {
+    this._rpc.request('addTags', {
+      key: this._authKey,
+      path,
+      tags,
     });
   }
 
