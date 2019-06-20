@@ -15,6 +15,22 @@ class Client {
     this._authKey = key;
   }
 
+  async getMetaStream(path) {
+    const response = await this._rpc.requestReceiveStream('getMetaStream', {
+      key: this._authKey,
+      path,
+      recursive: true,
+    });
+
+    console.log(response);
+    if (response.result === true) {
+      return response.producer;
+    }
+    else {
+      throw new Error("getMetaStream fail");
+    }
+  }
+
   uploadFile(path, file) {
 
     const fileStream = new FileReadProducer(file);
