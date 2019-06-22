@@ -22,7 +22,6 @@ class Client {
       recursive: true,
     });
 
-    console.log(response);
     if (response.result === true) {
       return response.producer;
     }
@@ -72,6 +71,13 @@ class Client {
       key: this._authKey,
       path,
       range,
+    });
+  }
+
+  async delete(path) {
+    return await this._rpc.request('delete', {
+      key: this._authKey,
+      path,
     });
   }
 }
