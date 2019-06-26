@@ -80,6 +80,17 @@ class Client {
       path,
     });
   }
+
+
+  // Permissions
+  //
+  addViewer(path, viewerId) {
+    this._rpc.request('addViewer', {
+      key: this._authKey,
+      path,
+      viewerId,
+    });
+  }
 }
 
 class ClientBuilder {
