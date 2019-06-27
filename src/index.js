@@ -84,6 +84,14 @@ class Client {
 
   // Permissions
   //
+  setPublicView(path, value) {
+    this._rpc.request('setPublicView', {
+      key: this._authKey,
+      path,
+      value,
+    });
+  }
+
   addViewer(path, viewerId) {
     this._rpc.request('addViewer', {
       key: this._authKey,
