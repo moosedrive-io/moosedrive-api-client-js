@@ -84,11 +84,12 @@ class Client {
 
   // Permissions
   //
-  setPublicView(path, value) {
+  setPublicView(path, value, recursive) {
     this._rpc.request('setPublicView', {
       key: this._authKey,
       path,
       value,
+      recursive,
     });
   }
 
