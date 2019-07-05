@@ -1,6 +1,7 @@
 import { encodeObject, decodeObject, initiateWebSocketMux } from 'omnistreams';
 import { FileReadProducer } from 'omnistreams-filereader';
 import { Peer as RPCPeer } from 'omni-rpc';
+import rein from 'rein-state';
 
 
 class Client {
@@ -13,6 +14,71 @@ class Client {
 
   setAuthKey(key) {
     this._authKey = key;
+  }
+
+  async getReinstate(path) {
+    const response = await this._rpc.requestReceiveStream('getReinstate', {
+      key: this._authKey,
+    });
+
+    const reinstate = rein.fromObject({
+      root: {},
+    });
+
+    response.producer.onData((rawData) => {
+
+      const data = decodeObject(rawData);
+
+      if (data.path.length === 0) {
+        reinstate.root = data.value;
+      }
+      else {
+
+        let curPath = reinstate.root;
+
+        function newObj(path) {
+          const obj = {};
+
+          let cur = obj;
+          for (const part of path) {
+            cur[part] = {};
+            cur = cur[part];
+          }
+
+          return obj;
+        }
+
+        while (data.path.length > 1) {
+          const part = data.path[0];
+
+          if (!curPath[part]) {
+            curPath[part] = rein.fromObject(newObj(data.path.slice(1)));
+          }
+
+          curPath = curPath[part];
+          data.path.shift();
+        }
+
+        if (data.action.type === 'update') {
+          curPath[data.path[data.path.length - 1]] = data.action.value;
+        }
+        else if (data.action.type === 'append') {
+          curPath[data.path[data.path.length - 1]].push(data.action.viewerId);
+        }
+      }
+
+      response.producer.request(1);
+    });
+
+
+    response.producer.request(10);
+
+    if (response.result === true) {
+      return reinstate;
+    }
+    else {
+      throw new Error("getReinstate fail");
+    }
   }
 
   async getMetaStream(path) {
