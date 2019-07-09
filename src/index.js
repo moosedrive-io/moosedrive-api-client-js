@@ -10,6 +10,8 @@ class Client {
     this._authKey = null;
 
     this._rpc = rpc;
+
+    this._reinUpdate = () => {};
   }
 
   setAuthKey(key) {
@@ -59,13 +61,23 @@ class Client {
           data.path.shift();
         }
 
+
+        const key = data.path[data.path.length - 1]; 
         if (data.action.type === 'update') {
-          curPath[data.path[data.path.length - 1]] = data.action.value;
+          curPath[key] = data.action.value;
         }
         else if (data.action.type === 'append') {
-          curPath[data.path[data.path.length - 1]].push(data.action.viewerId);
+          curPath[key].push(data.action.viewerId);
+        }
+        else if (data.action.type === 'add') {
+          curPath[key] = data.action.newFile;
+        }
+        else if (data.action.type === 'delete') {
+          delete curPath[key];
         }
       }
+
+      this._reinUpdate();
 
       response.producer.request(1);
     });
@@ -79,6 +91,10 @@ class Client {
     else {
       throw new Error("getReinstate fail");
     }
+  }
+
+  onReinUpdate(callback) {
+    this._reinUpdate = callback;
   }
 
   async getMetaStream(path) {
