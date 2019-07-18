@@ -1,4 +1,4 @@
-import { encodeObject, decodeObject, initiateWebSocketMux } from 'omnistreams';
+import { initiateWebSocketMux } from 'omnistreams';
 import { FileReadProducer } from 'omnistreams-filereader';
 import { Peer as RPCPeer } from 'omni-rpc';
 import rein from 'rein-state';
@@ -27,9 +27,7 @@ class Client {
       root: {},
     });
 
-    response.producer.onData((rawData) => {
-
-      const data = decodeObject(rawData);
+    response.producer.onData((data) => {
 
       if (data.path.length === 0) {
         reinstate.root = data.value;
