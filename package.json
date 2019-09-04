@@ -13,5 +13,8 @@
   "devDependencies": {
     "rollup": "^1.17.0",
     "rollup-plugin-node-resolve": "^5.2.0"
+  },
+  "dependencies": {
+    "omnistreams-filereader": "^0.6.0"
   }
 }
