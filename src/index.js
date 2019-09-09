@@ -161,6 +161,13 @@ class Client {
     });
   }
 
+  async createFolder(path) {
+    return await this._rpc.request('createFolder', {
+      key: this._authKey,
+      path,
+    });
+  }
+
 
   // Permissions
   //
