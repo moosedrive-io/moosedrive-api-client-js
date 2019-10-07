@@ -51,6 +51,8 @@ class Client {
         while (data.path.length > 1) {
           const part = data.path[0];
 
+          // TODO: this is broken. Should be curPath.children[part] or
+          // something like that
           if (!curPath[part]) {
             curPath[part] = rein.fromObject(newObj(data.path.slice(1)));
           }
@@ -71,7 +73,7 @@ class Client {
           curPath[key] = data.action.newFile;
         }
         else if (data.action.type === 'delete') {
-          delete curPath[key];
+          //delete curPath[key];
         }
       }
 
