@@ -73,7 +73,7 @@ class Client {
           curPath[key] = data.action.newFile;
         }
         else if (data.action.type === 'delete') {
-          //delete curPath[key];
+          delete curPath[key];
         }
       }
 
